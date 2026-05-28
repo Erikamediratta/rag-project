@@ -8,7 +8,7 @@ class RAGGenerator:
         genai.configure(api_key=api_key)
 
         self.model = genai.GenerativeModel(
-            "gemini-1.5-flash-latest"
+            model_name="models/gemini-1.5-flash"
         )
 
 
