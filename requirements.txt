@@ -10,3 +10,4 @@ transformers
 ipykernel
 tqdm
 chromadb
+google-generativeai==0.8.5

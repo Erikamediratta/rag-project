@@ -12,6 +12,7 @@ st.title("PDF RAG Chatbot")
 
 
 api_key=st.secrets["GOOGLE_API_KEY"]
+rag=RAGGenerator(api_key)
 
 
 query = st.text_input("Ask a question from the PDF")
