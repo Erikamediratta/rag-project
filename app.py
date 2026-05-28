@@ -7,53 +7,58 @@ from vector_store import VectorStore
 from rag_generator import RAGGenerator
 
 
-
 st.title("PDF RAG Chatbot")
 
+api_key = st.secrets["GOOGLE_API_KEY"]
 
-api_key=st.secrets["GOOGLE_API_KEY"]
-rag=RAGGenerator(api_key)
+
+@st.cache_resource
+def load_pipeline():
+    loader = PDFLoader("text_files")
+    documents = loader.load_pdfs()
+
+    splitter = TextSplitter()
+    chunks = splitter.split_documents(documents)
+
+    embedding_manager = EmbeddingManager()
+    embedding_manager.generate_embeddings(chunks)
+
+    vector_store = VectorStore()
+    vector_store.add_documents(chunks)
+
+    return vector_store
+
+
+
+@st.cache_resource
+def load_rag():
+    return RAGGenerator(api_key)
+
+
+vector_store = load_pipeline()
+rag = load_rag()
 
 
 query = st.text_input("Ask a question from the PDF")
 
+if st.button("Get Answer"):
 
+    if not query.strip():
+        st.warning("Please enter a question first.")
+    else:
+        with st.spinner("Thinking..."):
 
-if st.button("Run RAG Pipeline"):
+            try:
+                retrieved_docs = vector_store.retrieve(query)
+                answer = rag.generate_answer(query, retrieved_docs)
 
-    with st.spinner("Processing PDF..."):
+                st.subheader("Answer")
+                st.write(answer)
 
-        # Step 1: Load PDFs
-        loader = PDFLoader("text_files")
-        documents = loader.load_pdfs()
+                st.subheader("Retrieved Chunks")
+                for i, doc in enumerate(retrieved_docs):
+                    st.write(f"### Chunk {i+1}")
+                    st.write(doc["content"][:1000])
 
-        # Step 2: Split text
-        splitter = TextSplitter()
-        chunks = splitter.split_documents(documents)
-
-        # Step 3: Generate embeddings
-        embedding_manager = EmbeddingManager()
-        embeddings = embedding_manager.generate_embeddings(chunks)
-
-        # Step 4: Store vectors
-        vector_store = VectorStore()
-        vector_store.add_documents(chunks)
-
-        # Step 5: Retrieve relevant docs
-        retrieved_docs = vector_store.retrieve(query)
-
-        # Step 6: Generate answer
-        rag = RAGGenerator(api_key)
-        answer = rag.generate_answer(query, retrieved_docs)
-
-        # Display answer
-        st.subheader("Answer")
-        st.write(answer)
-
-        # Show retrieved chunks
-        st.subheader("Retrieved Chunks")
-
-        for i, doc in enumerate(retrieved_docs):
-
-            st.write(f"### Chunk {i+1}")
-            st.write(doc["content"][:1000])
+            except Exception as e:
+                st.error("Too many requests — please wait a moment and try again.")
