@@ -1,0 +1,12 @@
+streamlit
+langchain
+langchain-community
+pypdf
+sentence-transformers
+chromadb
+google-generativeai
+torch
+transformers
+ipykernel
+tqdm
+chromadb
