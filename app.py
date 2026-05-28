@@ -11,7 +11,7 @@ from rag_generator import RAGGenerator
 st.title("PDF RAG Chatbot")
 
 
-api_key = st.text_input("Enter Gemini API Key", type="password")
+api_key=st.secrets["GOOGLE_API_KEY"]
 
 
 query = st.text_input("Ask a question from the PDF")
