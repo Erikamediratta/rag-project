@@ -61,4 +61,4 @@ if st.button("Get Answer"):
                     st.write(doc["content"][:1000])
 
             except Exception as e:
-                st.error("Too many requests — please wait a moment and try again.")
+                st.error(f"Error: {str(e)}")
