@@ -36,7 +36,7 @@ if st.button("Run RAG Pipeline"):
 
         # Step 4: Store vectors
         vector_store = VectorStore()
-        vector_store.add_documents(chunks, embeddings)
+        vector_store.add_documents(chunks)
 
         # Step 5: Retrieve relevant docs
         retrieved_docs = vector_store.retrieve(query)
